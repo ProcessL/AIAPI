@@ -8,7 +8,7 @@ from langchain.prompts import (
     HumanMessagePromptTemplate
 )
 
-from task4.common.big_model_interface import generate_result
+from big_model_interface import generate_result
 
 
 class UserTagGenerator:
@@ -131,7 +131,7 @@ def get_user_info_from_file() -> Dict:
     """
     从文件中读取用户信息
     """
-    with open("task5/user_info.json", "r", encoding="utf-8") as f:
+    with open("user_info.json", "r", encoding="utf-8") as f:
         user_info_list = json.load(f)
         # 默认使用第一个用户的信息
         if user_info_list and len(user_info_list) > 0:

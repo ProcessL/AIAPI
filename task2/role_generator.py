@@ -7,9 +7,9 @@ from langchain.prompts import (
     HumanMessagePromptTemplate
 )
 
-from task2.big_model_interface import generate_result
+from big_model_interface import generate_result
 
-
+from loguru import logger
 
 
 # 角色属性配置
@@ -103,11 +103,11 @@ def main(params):
     try:
         age = int(age)
     except ValueError:
-        print("年龄必须是数字！")
+        logger.error("年龄必须是数字！")
         return
     
     # 生成角色属性
-    print("\n正在生成角色属性，请稍候...\n")
+    logger.info("正在生成角色属性，请稍候...")
     role_data, total_tokens = generator.role_gen(country, gender, age)
     
     if role_data:
@@ -120,8 +120,8 @@ def main(params):
         output_file = os.path.join(output_dir, f"role_profile_{country}_{gender}_{age}.json")
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(role_data, f, ensure_ascii=False, indent=2)
-        print(f"\n角色属性已生成并保存到：{output_file}")
-        print(f"本次共使用了{total_tokens}个token")
+        logger.info(f"角色属性已生成并保存到：{output_file}")
+        logger.info(f"本次共使用了{total_tokens}个token")
         return role_data,total_tokens
 
 if __name__ == "__main__":

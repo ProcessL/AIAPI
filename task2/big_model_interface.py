@@ -28,7 +28,7 @@ def generate_result(messages):
     full_comment = ""
     for chunk in llm.stream(messages):
         if chunk.content:
-            print(chunk.content, end="", flush=True)
+            # print(chunk.content, end="", flush=True)
             full_comment += chunk.content
     
     # 估算输出token
@@ -36,6 +36,6 @@ def generate_result(messages):
     total_tokens = prompt_tokens + completion_tokens
     
     # 打印token使用情况
-    print(f"\n\n使用了大约{total_tokens}个token (输入: {prompt_tokens}, 输出: {completion_tokens})")
+    # print(f"\n\n使用了大约{total_tokens}个token (输入: {prompt_tokens}, 输出: {completion_tokens})")
     
     return full_comment, total_tokens

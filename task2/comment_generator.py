@@ -1,11 +1,11 @@
 import io
 import os
 import sys
-from task4.common.big_model_interface import *
+from big_model_interface import *
 # 添加项目根目录到系统路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from task2.image_analysis import llm_result
-
+from image_analysis import llm_result
+from loguru import logger
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -49,16 +49,16 @@ def save_comment(comment, output_file):
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(comment)
     except Exception as e:
-        print(f"保存评论失败: {e}")
+        logger.error(f"保存评论失败: {e}")
 
-def main():
+def main(params):
     # 获取用户输入
-    image_path = input("请输入图片URL：")
-    input_text = input("请输入文案：")
+    image_path = params.get('image_path', '')
+    input_text = params.get('input_text', '')
     output_file = "generated_comment.txt"      # 输出评论文件
 
     if not input_text or not image_path:
-        print("无法继续执行：缺少必要的输入内容")
+        logger.error("无法继续执行：缺少必要的输入内容")
         return
     # 获取图片分析结果
     image_analysis, img_token = capture_stdout(llm_result, image_path)
@@ -97,8 +97,15 @@ def main():
     comment, comment_token = generate_result(messages)
     # 计算总token数量
     total_token = img_token + comment_token
-    print(f"本次共使用了{total_token}个token")
+    # logger.info(f"本次共使用了{total_token}个token")
     # save_comment(comment, output_file)
+    return comment, total_token
 
 if __name__ == "__main__":
-    main() 
+    params = {
+        "image_path": "https://scontent-lhr6-1.cdninstagram.com/v/t51.2885-19/471646931_633244312369538_8955977711726470575_n.jpg?_nc_ht=scontent-lhr6-1.cdninstagram.com&_nc_cat=102&_nc_oc=Q6cZ2QFvk6mSTkLVcxoij9_3BeJ4Dc8DwyIzXrGa6AD2UghazXlhAG0sWlajvEW3yJ6jZ8s&_nc_ohc=oOj_J5yt4UEQ7kNvwFV_cwT&_nc_gid=1Pwfc_iQHDwBtGNqD3NhTQ&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfMXuOHcRiYAf_GI7HkPLbLTVSvulB2HYpZEKmFs6151NQ&oe=686812BD&_nc_sid=7a9f4b",
+        "input_text": "今天天气真好，适合出去玩"
+    }
+    comment, total_token = main(params)
+    logger.info(f"推荐评论：{comment}")
+    logger.info(f"本次共使用了{total_token}个token")
